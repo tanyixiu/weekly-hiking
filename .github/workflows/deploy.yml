@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 当 main 分支有提交时触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout 代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: 安装依赖
+        run: |
+          cd client
+          npm ci
+      
+      - name: 构建项目
+        run: |
+          cd client
+          npm run build
+      
+      - name: 创建部署 Tag
+        run: |
+          TAG_NAME="deploy-$(date +'%Y%m%d-%H%M%S')"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG_NAME" -m "Auto deployment at $(date +'%Y-%m-%d %H:%M:%S')"
+          git push origin "$TAG_NAME"
+      
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./client/dist
