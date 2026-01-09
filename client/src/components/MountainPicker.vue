@@ -21,8 +21,24 @@
         <span class="star">⭐</span>
       </div>
       
+      <!-- 初始状态的欢迎界面 -->
+      <div class="welcome-screen" v-if="!selectedMountain && !isSpinning">
+        <div class="welcome-icon">🎲</div>
+        <div class="welcome-title">准备好了吗？</div>
+        <div class="welcome-subtitle">点击下方按钮开始探险</div>
+        <div class="mountain-count">
+          <span class="count-icon">🏔️</span>
+          <span class="count-text">共有 {{ mountains.length }} 座山等你探索</span>
+        </div>
+        <div class="decorative-icons">
+          <span class="deco-icon">🧭</span>
+          <span class="deco-icon">🎒</span>
+          <span class="deco-icon">🌲</span>
+        </div>
+      </div>
+      
       <!-- 显示多个山名 -->
-      <div class="mountains-carousel">
+      <div class="mountains-carousel" v-else>
         <div 
           v-for="(mountain, index) in visibleMountains" 
           :key="index"
@@ -408,7 +424,7 @@ function getStarDisplay(difficulty) {
 .display-area {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   border-radius: 30px;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4),
               0 0 0 8px #fff,
@@ -491,10 +507,138 @@ function getStarDisplay(difficulty) {
   to { transform: rotate(360deg); }
 }
 
+/* 欢迎界面 */
+.welcome-screen {
+  position: relative;
+  z-index: 10;
+  padding: 1.5rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.welcome-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite, rotate-slow 4s infinite ease-in-out;
+}
+
+@keyframes rotate-slow {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(360deg); }
+}
+
+.welcome-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 0.8rem;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.8s ease-out 0.2s backwards;
+}
+
+.mountain-count {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.8rem;
+  border-radius: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: slideUp 0.8s ease-out 0.4s backwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.count-icon {
+  font-size: 1.6rem;
+  animation: bounce 2s infinite;
+}
+
+.count-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.decorative-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.8rem;
+  margin-top: 1rem;
+}
+
+.deco-icon {
+  font-size: 2.2rem;
+  animation: float-up 3s infinite ease-in-out;
+  opacity: 0.8;
+}
+
+.deco-icon:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.deco-icon:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.deco-icon:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes float-up {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(10deg);
+  }
+}
+
 /* 山名轮播容器 */
 .mountains-carousel {
   position: relative;
-  min-height: 8rem;
+  min-height: 7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -503,7 +647,7 @@ function getStarDisplay(difficulty) {
 
 .mountain-name {
   position: absolute;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   color: rgba(255, 255, 255, 0.3);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -515,7 +659,7 @@ function getStarDisplay(difficulty) {
 
 /* 当前显示的山名 - 最明显 */
 .mountain-name.is-current {
-  font-size: 3.5rem;
+  font-size: 3rem;
   color: #fff;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3),
                0 0 20px rgba(255, 255, 255, 0.5);
@@ -525,32 +669,32 @@ function getStarDisplay(difficulty) {
 
 /* 前一个和后一个 - 稍小 */
 .mountain-name.is-prev {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   color: rgba(255, 255, 255, 0.6);
   z-index: 3;
-  transform: translateY(-2.5rem) scale(0.8);
+  transform: translateY(-2.3rem) scale(0.8);
 }
 
 .mountain-name.is-next {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   color: rgba(255, 255, 255, 0.6);
   z-index: 3;
-  transform: translateY(2.5rem) scale(0.8);
+  transform: translateY(2.3rem) scale(0.8);
 }
 
 /* 更远的山名 - 更小更透明 */
 .mountain-name.is-far {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.2);
   z-index: 1;
 }
 
 .mountain-name.is-far:first-child {
-  transform: translateY(-4.5rem) scale(0.6);
+  transform: translateY(-4rem) scale(0.6);
 }
 
 .mountain-name.is-far:last-child {
-  transform: translateY(4.5rem) scale(0.6);
+  transform: translateY(4rem) scale(0.6);
 }
 
 /* 旋转时的动画 */
@@ -572,8 +716,8 @@ function getStarDisplay(difficulty) {
 }
 
 .mountain-emoji {
-  margin-top: 1rem;
-  font-size: 2.5rem;
+  margin-top: 0.8rem;
+  font-size: 2.3rem;
   animation: celebration 0.5s ease-in-out;
 }
 
