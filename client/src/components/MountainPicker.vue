@@ -114,7 +114,7 @@
         <!-- 特色亮点 -->
         <div class="highlights-section">
           <div class="highlight-item scenic">
-            <span class="highlight-icon">🌄</span>
+            <span class="highlight-icon">🏞️</span>
             <div class="highlight-content">
               <div class="highlight-label">风景特色</div>
               <div class="highlight-text">{{ selectedMountain.scenery }}</div>
