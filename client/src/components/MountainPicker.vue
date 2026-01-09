@@ -424,7 +424,7 @@ function getStarDisplay(difficulty) {
 .display-area {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   border-radius: 30px;
-  padding: 3rem 2rem;
+  padding: 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4),
               0 0 0 8px #fff,
@@ -511,7 +511,7 @@ function getStarDisplay(difficulty) {
 .welcome-screen {
   position: relative;
   z-index: 10;
-  padding: 1.5rem;
+  padding: 0.5rem;
   animation: fadeIn 0.8s ease-out;
 }
 
@@ -527,8 +527,8 @@ function getStarDisplay(difficulty) {
 }
 
 .welcome-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
   animation: bounce 2s infinite, rotate-slow 4s infinite ease-in-out;
 }
 
@@ -538,10 +538,10 @@ function getStarDisplay(difficulty) {
 }
 
 .welcome-title {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   color: white;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
   animation: slideDown 0.8s ease-out;
 }
@@ -558,9 +558,9 @@ function getStarDisplay(difficulty) {
 }
 
 .welcome-subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.8rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   animation: slideDown 0.8s ease-out 0.2s backwards;
 }
@@ -568,12 +568,12 @@ function getStarDisplay(difficulty) {
 .mountain-count {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
-  padding: 1rem 1.8rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 25px;
   display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 1.2rem;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
   animation: slideUp 0.8s ease-out 0.4s backwards;
 }
@@ -590,12 +590,12 @@ function getStarDisplay(difficulty) {
 }
 
 .count-icon {
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   animation: bounce 2s infinite;
 }
 
 .count-text {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -604,12 +604,12 @@ function getStarDisplay(difficulty) {
 .decorative-icons {
   display: flex;
   justify-content: center;
-  gap: 1.8rem;
-  margin-top: 1rem;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .deco-icon {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   animation: float-up 3s infinite ease-in-out;
   opacity: 0.8;
 }
