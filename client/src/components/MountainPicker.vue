@@ -187,35 +187,18 @@ function start() {
   }, speed)
 }
 
-// 停止旋转（减速效果）
+// 停止旋转（立即停止）
 function stop() {
   if (!isSpinning.value) return
 
   // 清除快速旋转
   clearInterval(spinInterval)
-
-  // 开始减速
-  slowDown()
+  
+  // 立即停止
+  isSpinning.value = false
+  selectedMountain.value = mountains.value[currentIndex.value]
 }
 
-// 减速停止
-function slowDown() {
-  speed += 30
-
-  if (speed > 500) {
-    // 完全停止
-    isSpinning.value = false
-    selectedMountain.value = mountains.value[currentIndex.value]
-    return
-  }
-
-  // 继续减速
-  spinInterval = setTimeout(() => {
-    currentIndex.value = (currentIndex.value + 1) % mountains.value.length
-    currentMountain.value = mountains.value[currentIndex.value].name
-    slowDown()
-  }, speed)
-}
 
 // 确认选择并保存到历史记录
 function confirmChoice() {
