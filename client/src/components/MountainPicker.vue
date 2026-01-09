@@ -95,19 +95,19 @@
           </div>
           
           <div class="info-box">
+            <div class="info-box-icon">💪</div>
+            <div class="info-box-label">难度等级</div>
+            <div class="info-box-value difficulty-badge" :class="getDifficultyClass(selectedMountain.difficulty)">
+              {{ getStarDisplay(selectedMountain.difficulty) }}
+            </div>
+            <div class="info-box-sub">{{ getStarCount(selectedMountain.difficulty) }}星难度</div>
+          </div>
+          
+          <div class="info-box">
             <div class="info-box-icon">🥾</div>
             <div class="info-box-label">徒步里程</div>
             <div class="info-box-value">{{ selectedMountain.hiking_distance }}</div>
             <div class="info-box-sub">{{ selectedMountain.road_condition }}</div>
-          </div>
-          
-          <div class="info-box">
-            <div class="info-box-icon">💪</div>
-            <div class="info-box-label">难度等级</div>
-            <div class="info-box-value difficulty-badge" :class="getDifficultyClass(selectedMountain.difficulty)">
-              {{ selectedMountain.difficulty }}
-            </div>
-            <div class="info-box-sub">适合全家</div>
           </div>
         </div>
 
@@ -285,12 +285,27 @@ function confirmChoice() {
 
 // 获取难度等级的样式类
 function getDifficultyClass(difficulty) {
-  const difficultyMap = {
-    '简单': 'difficulty-easy',
-    '中等': 'difficulty-medium',
-    '困难': 'difficulty-hard'
-  }
-  return difficultyMap[difficulty] || 'difficulty-easy'
+  // 根据星星数量返回样式类
+  const starCount = getStarCount(difficulty)
+  if (starCount <= 2) return 'difficulty-easy'
+  if (starCount <= 3) return 'difficulty-medium'
+  return 'difficulty-hard'
+}
+
+// 计算星星数量
+function getStarCount(difficulty) {
+  if (!difficulty) return 0
+  // 统计 ★ 的数量
+  return (difficulty.match(/★/g) || []).length
+}
+
+// 生成星星显示（实心+空心）
+function getStarDisplay(difficulty) {
+  const starCount = getStarCount(difficulty)
+  const maxStars = 5
+  const filledStars = '★'.repeat(starCount)
+  const emptyStars = '☆'.repeat(maxStars - starCount)
+  return filledStars + emptyStars
 }
 </script>
 
@@ -806,10 +821,13 @@ function getDifficultyClass(difficulty) {
 /* 难度徽章 */
 .difficulty-badge {
   display: inline-block;
-  padding: 0.3rem 1rem;
+  padding: 0.5rem 1.2rem;
   border-radius: 15px;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  font-family: Arial, sans-serif;
+  margin: 0 auto;
 }
 
 .difficulty-easy {
@@ -820,6 +838,7 @@ function getDifficultyClass(difficulty) {
 .difficulty-medium {
   background: linear-gradient(135deg, #ffd93d, #ffaa00);
   box-shadow: 0 3px 10px rgba(255, 217, 61, 0.3);
+  color: #333;
 }
 
 .difficulty-hard {
