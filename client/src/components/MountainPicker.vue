@@ -15,14 +15,30 @@
     
     <!-- 主抽签区域 -->
     <div class="display-area" :class="{ spinning: isSpinning }">
-      <div class="stars" v-if="selectedMountain">
+      <div class="stars" v-if="selectedMountain && !isSpinning">
         <span class="star">⭐</span>
         <span class="star">⭐</span>
         <span class="star">⭐</span>
       </div>
-      <div class="mountain-name" :class="{ spinning: isSpinning }">
-        {{ currentMountain }}
+      
+      <!-- 显示多个山名 -->
+      <div class="mountains-carousel">
+        <div 
+          v-for="(mountain, index) in visibleMountains" 
+          :key="index"
+          class="mountain-name"
+          :class="{
+            'is-current': index === 2,
+            'is-prev': index === 1,
+            'is-next': index === 3,
+            'is-far': index === 0 || index === 4,
+            spinning: isSpinning
+          }"
+        >
+          {{ mountain }}
+        </div>
       </div>
+      
       <div class="mountain-emoji" v-if="!isSpinning && selectedMountain">
         🎉🎊🎉
       </div>
@@ -36,7 +52,7 @@
         class="btn btn-start"
       >
         <span class="btn-icon">🚀</span>
-        <span class="btn-text">开始</span>
+        <span class="btn-text">{{ selectedMountain && !isConfirmed ? '再抽一次' : '开始' }}</span>
       </button>
       <button 
         @click="stop" 
@@ -45,6 +61,15 @@
       >
         <span class="btn-icon">🛑</span>
         <span class="btn-text">停止</span>
+      </button>
+      <button 
+        @click="confirmChoice" 
+        :disabled="!selectedMountain || isSpinning || isConfirmed"
+        class="btn btn-confirm"
+        v-if="selectedMountain && !isConfirmed"
+      >
+        <span class="btn-icon">✅</span>
+        <span class="btn-text">就这个了！</span>
       </button>
     </div>
 
@@ -78,7 +103,7 @@
     <!-- 历史记录 -->
     <div class="history-card" v-if="history.length > 0">
       <h3 class="history-title">
-        <span>📖</span> 探险日记 <span>✨</span>
+        <span>🎯</span> 最终决定 <span>✨</span>
       </h3>
       <ul class="history-list">
         <li v-for="(item, index) in history" :key="index" class="history-item">
@@ -93,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Papa from 'papaparse'
 import mountainsCSV from '../assets/mountains.csv?raw'
 
@@ -101,11 +126,30 @@ const mountains = ref([])
 const currentMountain = ref('点击开始')
 const isSpinning = ref(false)
 const selectedMountain = ref(null)
+const isConfirmed = ref(false)
 const history = ref([])
+const currentIndex = ref(0)  // 改为响应式变量
 
 let spinInterval = null
-let currentIndex = 0
 let speed = 50
+
+// 计算可见的山名列表（当前山名及其前后的山）
+const visibleMountains = computed(() => {
+  if (mountains.value.length === 0) {
+    return ['点击开始', '', '', '', '']
+  }
+  
+  const total = mountains.value.length
+  const result = []
+  
+  // 显示5个山名：前2个、当前、后2个
+  for (let i = -2; i <= 2; i++) {
+    let index = (currentIndex.value + i + total) % total
+    result.push(mountains.value[index]?.name || '')
+  }
+  
+  return result
+})
 
 // 加载 CSV 数据
 onMounted(() => {
@@ -134,11 +178,12 @@ function start() {
 
   isSpinning.value = true
   selectedMountain.value = null
+  isConfirmed.value = false
   speed = 50
 
   spinInterval = setInterval(() => {
-    currentIndex = (currentIndex + 1) % mountains.value.length
-    currentMountain.value = mountains.value[currentIndex].name
+    currentIndex.value = (currentIndex.value + 1) % mountains.value.length
+    currentMountain.value = mountains.value[currentIndex.value].name
   }, speed)
 }
 
@@ -160,31 +205,37 @@ function slowDown() {
   if (speed > 500) {
     // 完全停止
     isSpinning.value = false
-    selectedMountain.value = mountains.value[currentIndex]
-    
-    // 保存到历史记录
-    const record = {
-      name: selectedMountain.value.name,
-      date: new Date().toLocaleDateString('zh-CN')
-    }
-    history.value.unshift(record)
-    
-    // 只保留最近10条
-    if (history.value.length > 10) {
-      history.value = history.value.slice(0, 10)
-    }
-    
-    localStorage.setItem('hikingHistory', JSON.stringify(history.value))
-    
+    selectedMountain.value = mountains.value[currentIndex.value]
     return
   }
 
   // 继续减速
   spinInterval = setTimeout(() => {
-    currentIndex = (currentIndex + 1) % mountains.value.length
-    currentMountain.value = mountains.value[currentIndex].name
+    currentIndex.value = (currentIndex.value + 1) % mountains.value.length
+    currentMountain.value = mountains.value[currentIndex.value].name
     slowDown()
   }, speed)
+}
+
+// 确认选择并保存到历史记录
+function confirmChoice() {
+  if (!selectedMountain.value || isConfirmed.value) return
+  
+  isConfirmed.value = true
+  
+  // 保存到历史记录
+  const record = {
+    name: selectedMountain.value.name,
+    date: new Date().toLocaleDateString('zh-CN')
+  }
+  history.value.unshift(record)
+  
+  // 只保留最近10条
+  if (history.value.length > 10) {
+    history.value = history.value.slice(0, 10)
+  }
+  
+  localStorage.setItem('hikingHistory', JSON.stringify(history.value))
 }
 </script>
 
@@ -356,27 +407,76 @@ function slowDown() {
   to { transform: rotate(360deg); }
 }
 
-.mountain-name {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: #fff;
-  min-height: 5rem;
+/* 山名轮播容器 */
+.mountains-carousel {
+  position: relative;
+  min-height: 8rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.1em;
+  perspective: 1000px;
 }
 
-.mountain-name.spinning {
+.mountain-name {
+  position: absolute;
+  font-size: 2rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+/* 当前显示的山名 - 最明显 */
+.mountain-name.is-current {
+  font-size: 3.5rem;
+  color: #fff;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3),
+               0 0 20px rgba(255, 255, 255, 0.5);
+  z-index: 5;
+  transform: translateY(0) scale(1);
+}
+
+/* 前一个和后一个 - 稍小 */
+.mountain-name.is-prev {
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 3;
+  transform: translateY(-2.5rem) scale(0.8);
+}
+
+.mountain-name.is-next {
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 3;
+  transform: translateY(2.5rem) scale(0.8);
+}
+
+/* 更远的山名 - 更小更透明 */
+.mountain-name.is-far {
+  font-size: 1.8rem;
+  color: rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
+
+.mountain-name.is-far:first-child {
+  transform: translateY(-4.5rem) scale(0.6);
+}
+
+.mountain-name.is-far:last-child {
+  transform: translateY(4.5rem) scale(0.6);
+}
+
+/* 旋转时的动画 */
+.mountain-name.is-current.spinning {
   animation: pulse 0.3s infinite, colorChange 0.5s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(0) scale(1.1); }
 }
 
 @keyframes colorChange {
@@ -475,6 +575,32 @@ function slowDown() {
   transform: translateY(-4px);
   box-shadow: 0 12px 0 rgba(0, 0, 0, 0.2),
               0 16px 25px rgba(231, 76, 60, 0.4);
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #ffd93d 0%, #ffaa00 100%);
+  color: #333;
+  animation: glow 2s infinite;
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffc93d 0%, #ff9900 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 0 rgba(0, 0, 0, 0.2),
+              0 16px 25px rgba(255, 217, 61, 0.6);
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2),
+                0 12px 20px rgba(0, 0, 0, 0.15),
+                0 0 20px rgba(255, 217, 61, 0.5);
+  }
+  50% {
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2),
+                0 12px 20px rgba(0, 0, 0, 0.15),
+                0 0 40px rgba(255, 217, 61, 0.8);
+  }
 }
 
 /* 信息卡片 */
