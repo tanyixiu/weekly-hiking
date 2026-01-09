@@ -2,6 +2,10 @@
 
 一个有趣的家庭爬山抽签小游戏，帮助成都家庭随机选择本周要去爬的山。
 
+## 🌐 在线体验
+
+**访问地址：** [https://tanyixiu.github.io/weekly-hiking/](https://tanyixiu.github.io/weekly-hiking/)
+
 ## ✨ 功能特性
 
 - 🎲 随机抽取山峰
@@ -65,6 +69,8 @@ id,name,area,distance,drive_time,difficulty,scenery,plants,hiking_distance,road_
 - plants：当地植物和特产
 - hiking_distance：徒步距离
 - road_condition：路况描述
+
+你可以根据需要随时添加、删除或修改山峰数据。
 
 ## 🔮 未来扩展
 
