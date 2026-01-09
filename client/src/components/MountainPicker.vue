@@ -421,13 +421,27 @@ function getDifficultyClass(difficulty) {
 }
 
 .display-area.spinning {
-  animation: shake 0.3s infinite;
+  animation: shake 0.2s infinite, vibrate 0.1s infinite;
 }
 
 @keyframes shake {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-2deg); }
-  75% { transform: rotate(2deg); }
+  0% { transform: rotate(0deg) scale(1); }
+  10% { transform: rotate(-5deg) scale(1.02); }
+  20% { transform: rotate(5deg) scale(0.98); }
+  30% { transform: rotate(-5deg) scale(1.02); }
+  40% { transform: rotate(5deg) scale(0.98); }
+  50% { transform: rotate(-5deg) scale(1.02); }
+  60% { transform: rotate(5deg) scale(0.98); }
+  70% { transform: rotate(-5deg) scale(1.02); }
+  80% { transform: rotate(5deg) scale(0.98); }
+  90% { transform: rotate(-5deg) scale(1.02); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes vibrate {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
 }
 
 .stars {
