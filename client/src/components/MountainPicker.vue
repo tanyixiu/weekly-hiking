@@ -162,29 +162,40 @@ import Papa from 'papaparse'
 import mountainsCSV from '../assets/mountains.csv?raw'
 
 const mountains = ref([])
+const shuffledMountains = ref([])  // 打乱后的列表
 const currentMountain = ref('点击开始')
 const isSpinning = ref(false)
 const selectedMountain = ref(null)
 const isConfirmed = ref(false)
 const history = ref([])
-const currentIndex = ref(0)  // 改为响应式变量
+const currentIndex = ref(0)
 
 let spinInterval = null
 let speed = 50
 
+// 打乱数组的函数（Fisher-Yates 洗牌算法）
+function shuffleArray(array) {
+  const newArray = [...array]
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+  }
+  return newArray
+}
+
 // 计算可见的山名列表（当前山名及其前后的山）
 const visibleMountains = computed(() => {
-  if (mountains.value.length === 0) {
+  if (shuffledMountains.value.length === 0) {
     return ['点击开始', '', '', '', '']
   }
   
-  const total = mountains.value.length
+  const total = shuffledMountains.value.length
   const result = []
   
   // 显示5个山名：前2个、当前、后2个
   for (let i = -2; i <= 2; i++) {
     let index = (currentIndex.value + i + total) % total
-    result.push(mountains.value[index]?.name || '')
+    result.push(shuffledMountains.value[index]?.name || '')
   }
   
   return result
@@ -220,9 +231,20 @@ function start() {
   isConfirmed.value = false
   speed = 50
 
+  // 第一步：随机打乱列表
+  shuffledMountains.value = shuffleArray(mountains.value)
+  currentIndex.value = 0  // 从打乱后列表的第一个开始
+
   spinInterval = setInterval(() => {
-    currentIndex.value = (currentIndex.value + 1) % mountains.value.length
-    currentMountain.value = mountains.value[currentIndex.value].name
+    // 顺序遍历打乱后的列表
+    currentIndex.value = (currentIndex.value + 1) % shuffledMountains.value.length
+    
+    // 如果遍历到末尾（回到0），重新打乱列表
+    if (currentIndex.value === 0) {
+      shuffledMountains.value = shuffleArray(mountains.value)
+    }
+    
+    currentMountain.value = shuffledMountains.value[currentIndex.value].name
   }, speed)
 }
 
@@ -230,12 +252,12 @@ function start() {
 function stop() {
   if (!isSpinning.value) return
 
-  // 清除快速旋转
+  // 清除旋转定时器
   clearInterval(spinInterval)
   
-  // 立即停止
+  // 立即停止并显示当前结果
   isSpinning.value = false
-  selectedMountain.value = mountains.value[currentIndex.value]
+  selectedMountain.value = shuffledMountains.value[currentIndex.value]
 }
 
 
