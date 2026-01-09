@@ -9,8 +9,8 @@
 
     <h1 class="title">
       <span class="title-emoji">🏔️</span>
-      <span class="title-text">周末爬山抽签器</span>
-      <span class="title-emoji">🎈</span>
+      <span class="title-text">成都周边·每周一山</span>
+      <span class="title-emoji">🎒</span>
     </h1>
     
     <!-- 主抽签区域 -->
@@ -77,27 +77,65 @@
     <div class="info-card" v-if="selectedMountain">
       <div class="info-header">
         <span class="trophy">🏆</span>
-        <span class="info-title">本周目标</span>
+        <span class="info-title">本周探险目标</span>
         <span class="trophy">🏆</span>
       </div>
+      
       <div class="info-content">
         <h2 class="mountain-result">{{ selectedMountain.name }}</h2>
-        <div class="info-details">
-          <div class="info-item">
-            <span class="info-emoji">📍</span>
-            <span>{{ selectedMountain.location }}</span>
+        <div class="location-tag">📍 {{ selectedMountain.area }}</div>
+        
+        <!-- 主要信息卡片组 -->
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-box-icon">🚗</div>
+            <div class="info-box-label">开车距离</div>
+            <div class="info-box-value">{{ selectedMountain.distance }}</div>
+            <div class="info-box-sub">约{{ selectedMountain.drive_time }}</div>
           </div>
-          <div class="info-item">
-            <span class="info-emoji">⛰️</span>
-            <span>{{ selectedMountain.elevation }}米</span>
+          
+          <div class="info-box">
+            <div class="info-box-icon">🥾</div>
+            <div class="info-box-label">徒步里程</div>
+            <div class="info-box-value">{{ selectedMountain.hiking_distance }}</div>
+            <div class="info-box-sub">{{ selectedMountain.road_condition }}</div>
           </div>
-          <div class="info-item">
-            <span class="info-emoji">💪</span>
-            <span>{{ selectedMountain.difficulty }}</span>
+          
+          <div class="info-box">
+            <div class="info-box-icon">💪</div>
+            <div class="info-box-label">难度等级</div>
+            <div class="info-box-value difficulty-badge" :class="getDifficultyClass(selectedMountain.difficulty)">
+              {{ selectedMountain.difficulty }}
+            </div>
+            <div class="info-box-sub">适合全家</div>
+          </div>
+        </div>
+
+        <!-- 特色亮点 -->
+        <div class="highlights-section">
+          <div class="highlight-item scenic">
+            <span class="highlight-icon">🌄</span>
+            <div class="highlight-content">
+              <div class="highlight-label">风景特色</div>
+              <div class="highlight-text">{{ selectedMountain.scenery }}</div>
+            </div>
+          </div>
+          
+          <div class="highlight-item plants">
+            <span class="highlight-icon">🌸</span>
+            <div class="highlight-content">
+              <div class="highlight-label">植物特产</div>
+              <div class="highlight-text">{{ selectedMountain.plants }}</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="encouragement">加油！我们一起去探险吧！🎒</div>
+      
+      <div class="encouragement">
+        <span class="encouragement-icon">🎒</span>
+        <span>这周就去这里探险啦！出发成都周边～</span>
+        <span class="encouragement-icon">✨</span>
+      </div>
     </div>
 
     <!-- 历史记录 -->
@@ -110,6 +148,7 @@
           <span class="history-badge">{{ index + 1 }}</span>
           <span class="history-date">{{ item.date }}</span>
           <span class="history-name">{{ item.name }}</span>
+          <span class="history-location">{{ item.area }}</span>
           <span class="history-icon">🏔️</span>
         </li>
       </ul>
@@ -209,6 +248,7 @@ function confirmChoice() {
   // 保存到历史记录
   const record = {
     name: selectedMountain.value.name,
+    area: selectedMountain.value.area,
     date: new Date().toLocaleDateString('zh-CN')
   }
   history.value.unshift(record)
@@ -219,6 +259,16 @@ function confirmChoice() {
   }
   
   localStorage.setItem('hikingHistory', JSON.stringify(history.value))
+}
+
+// 获取难度等级的样式类
+function getDifficultyClass(difficulty) {
+  const difficultyMap = {
+    '简单': 'difficulty-easy',
+    '中等': 'difficulty-medium',
+    '困难': 'difficulty-hard'
+  }
+  return difficultyMap[difficulty] || 'difficulty-easy'
 }
 </script>
 
@@ -589,7 +639,7 @@ function confirmChoice() {
 /* 信息卡片 */
 .info-card {
   background: linear-gradient(135deg, #fff9e6 0%, #ffe4f5 100%);
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 25px;
   margin-bottom: 2rem;
   box-shadow: 0 10px 30px rgba(255, 107, 157, 0.2),
@@ -643,40 +693,182 @@ function confirmChoice() {
   font-size: 3rem;
   font-weight: 900;
   color: #667eea;
-  margin: 1rem 0;
+  margin: 1rem 0 0.5rem;
   text-shadow: 3px 3px 0 #ffd93d;
 }
 
-.info-details {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.location-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+/* 信息网格 */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
   margin: 1.5rem 0;
 }
 
-.info-item {
+.info-box {
   background: white;
-  padding: 0.8rem 1.5rem;
+  padding: 1.2rem;
   border-radius: 20px;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #667eea;
-  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  text-align: center;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 3px solid transparent;
 }
 
-.info-emoji {
-  font-size: 1.5rem;
+.info-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  border-color: #ffd93d;
+}
+
+.info-box-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  animation: bounce 2s infinite;
+}
+
+.info-box:nth-child(2) .info-box-icon {
+  animation-delay: 0.3s;
+}
+
+.info-box:nth-child(3) .info-box-icon {
+  animation-delay: 0.6s;
+}
+
+.info-box-label {
+  font-size: 0.9rem;
+  color: #999;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.info-box-value {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #667eea;
+  margin: 0.3rem 0;
+}
+
+.info-box-sub {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.3rem;
+}
+
+/* 难度徽章 */
+.difficulty-badge {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border-radius: 15px;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.difficulty-easy {
+  background: linear-gradient(135deg, #6bcf7f, #4caf50);
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+}
+
+.difficulty-medium {
+  background: linear-gradient(135deg, #ffd93d, #ffaa00);
+  box-shadow: 0 3px 10px rgba(255, 217, 61, 0.3);
+}
+
+.difficulty-hard {
+  background: linear-gradient(135deg, #ff6b9d, #e74c3c);
+  box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+}
+
+/* 特色亮点 */
+.highlights-section {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.highlight-item {
+  background: white;
+  padding: 1.2rem 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border: 3px solid #ffcc80;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.highlight-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 204, 128, 0.3);
+}
+
+.highlight-item.scenic {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-color: #64b5f6;
+}
+
+.highlight-item.plants {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border-color: #ffcc80;
+}
+
+.highlight-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  animation: wiggle 2s infinite;
+  margin-top: 0.2rem;
+}
+
+.highlight-content {
+  flex: 1;
+  text-align: left;
+}
+
+.highlight-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.highlight-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.5;
 }
 
 .encouragement {
   margin-top: 1.5rem;
-  font-size: 1.4rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e1f5fe, #f3e5f5);
+  border-radius: 20px;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #6bcf7f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 3px dashed #6bcf7f;
+}
+
+.encouragement-icon {
+  font-size: 1.5rem;
   animation: bounce 1s infinite;
 }
 
@@ -721,6 +913,7 @@ function confirmChoice() {
   color: #667eea;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+  flex-wrap: wrap;
 }
 
 .history-item:hover {
@@ -752,6 +945,16 @@ function confirmChoice() {
   flex: 1;
   text-align: left;
   font-size: 1.1rem;
+  min-width: 100px;
+}
+
+.history-location {
+  background: linear-gradient(135deg, #e1bee7, #ce93d8);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 .history-icon {

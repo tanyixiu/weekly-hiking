@@ -1,6 +1,6 @@
-# 🏔️ 周末爬山抽签器 Weekly Hiking
+# 🏔️ 成都周边·每周一山
 
-一个简单有趣的网页小游戏，帮助家庭随机选择本周要爬的山。
+一个有趣的家庭爬山抽签小游戏，帮助成都家庭随机选择本周要去爬的山。
 
 ## ✨ 功能特性
 
@@ -49,10 +49,22 @@ client/
 编辑 `src/assets/mountains.csv` 文件，格式如下：
 
 ```csv
-name,difficulty,location,elevation
-紫金山,简单,南京,448
-栖霞山,简单,南京,286
+id,name,area,distance,drive_time,difficulty,scenery,plants,hiking_distance,road_condition
+1,紫霞山,龙泉驿,50km,1h 30min,★,俯瞰苍翠和龙泉驿市区,青冈树、慈竹,3.3km,石梯、木栈道
+2,狮子宝,大邑,50km,1h 30min,★★,清丽基地、鹤鸣道观,马蹄、蕨菜,7km,石梯、土路
 ```
+
+**字段说明：**
+- id：山的编号
+- name：山的名字
+- area：所在区县
+- distance：距离成都的距离
+- drive_time：开车时长
+- difficulty：用星级表示（★ 到 ★★★★★）
+- scenery：景点特色
+- plants：当地植物和特产
+- hiking_distance：徒步距离
+- road_condition：路况描述
 
 ## 🔮 未来扩展
 
